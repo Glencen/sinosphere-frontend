@@ -11,10 +11,16 @@ import {
   ListItem, 
   ListItemText, 
   useTheme, 
-  useMediaQuery 
+  useMediaQuery,
+  Avatar,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import { Menu as MenuIcon } from '@mui/icons-material';
+import { useAuth } from '../contexts/AuthContext';
 import { ReactComponent as AppIcon } from '../logo.svg';
+import LoginModal from './LoginModal';
+import RegisterModal from './RegisterModal';
 
 const navigationStyles = {
   appBar: {
@@ -105,16 +111,70 @@ const navigationStyles = {
     flexDirection: 'column',
     gap: 1,
     mt: 2
+  },
+  userAvatar: {
+    width: 32,
+    height: 32,
+    backgroundColor: '#2563EB',
+    fontSize: '0.875rem',
+    fontWeight: 600
   }
 };
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+  
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, isAuthenticated, logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleLoginOpen = () => {
+    setLoginOpen(true);
+    if (isMobile) setMobileOpen(false);
+  };
+
+  const handleRegisterOpen = () => {
+    setRegisterOpen(true);
+    if (isMobile) setMobileOpen(false);
+  };
+
+  const handleLoginClose = () => {
+    setLoginOpen(false);
+  };
+
+  const handleRegisterClose = () => {
+    setRegisterOpen(false);
+  };
+
+  const handleSwitchToRegister = () => {
+    setLoginOpen(false);
+    setRegisterOpen(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setRegisterOpen(false);
+    setLoginOpen(true);
+  };
+
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleUserMenuClose();
+    if (isMobile) setMobileOpen(false);
   };
 
   const navItems = [
@@ -122,6 +182,10 @@ const Navbar = () => {
     { label: 'Словарь', href: '#' },
     { label: 'О нас', href: '#' },
   ];
+
+  const getInitials = (username) => {
+    return username ? username.charAt(0).toUpperCase() : 'U';
+  };
 
   const drawer = (
     <Box sx={navigationStyles.drawerContent} onClick={handleDrawerToggle}>
@@ -140,14 +204,31 @@ const Navbar = () => {
             />
           </ListItem>
         ))}
-        <ListItem sx={navigationStyles.drawerAuthContainer}>
-          <Button variant="outlined" fullWidth>
-            Войти
-          </Button>
-          <Button variant="contained" fullWidth>
-            Начать учиться
-          </Button>
-        </ListItem>
+        
+        {isAuthenticated ? (
+          <>
+            <ListItem>
+              <ListItemText 
+                primary={`Привет, ${user?.user?.username || 'Пользователь'}!`} 
+                sx={{ textAlign: 'center', fontWeight: 600 }}
+              />
+            </ListItem>
+            <ListItem sx={navigationStyles.drawerAuthContainer}>
+              <Button variant="outlined" fullWidth onClick={handleLogout}>
+                Выйти
+              </Button>
+            </ListItem>
+          </>
+        ) : (
+          <ListItem sx={navigationStyles.drawerAuthContainer}>
+            <Button variant="outlined" fullWidth onClick={handleLoginOpen}>
+              Войти
+            </Button>
+            <Button variant="contained" fullWidth onClick={handleRegisterOpen}>
+              Начать учиться
+            </Button>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
@@ -172,14 +253,35 @@ const Navbar = () => {
                   </Button>
                 ))}
               </Box>
-              <Box sx={navigationStyles.authContainer}>
-                <Button variant="outlined" sx={navigationStyles.loginButton}>
-                  Войти
-                </Button>
-                <Button variant="contained" sx={navigationStyles.signupButton}>
-                  Начать учиться
-                </Button>
-              </Box>
+              
+              {isAuthenticated ? (
+                <Box sx={navigationStyles.authContainer}>
+                  <IconButton onClick={handleUserMenuOpen} size="small">
+                    <Avatar sx={navigationStyles.userAvatar}>
+                      {getInitials(user?.user?.username)}
+                    </Avatar>
+                  </IconButton>
+                  <Menu
+                    anchorEl={userMenuAnchor}
+                    open={Boolean(userMenuAnchor)}
+                    onClose={handleUserMenuClose}
+                  >
+                    <MenuItem onClick={handleUserMenuClose}>
+                      Профиль: {user?.user?.username}
+                    </MenuItem>
+                    <MenuItem onClick={handleLogout}>Выйти</MenuItem>
+                  </Menu>
+                </Box>
+              ) : (
+                <Box sx={navigationStyles.authContainer}>
+                  <Button variant="outlined" sx={navigationStyles.loginButton} onClick={handleLoginOpen}>
+                    Войти
+                  </Button>
+                  <Button variant="contained" sx={navigationStyles.signupButton} onClick={handleRegisterOpen}>
+                    Начать учиться
+                  </Button>
+                </Box>
+              )}
             </>
           )}
 
@@ -207,6 +309,18 @@ const Navbar = () => {
       >
         {drawer}
       </Drawer>
+
+      <LoginModal 
+        open={loginOpen}
+        onClose={handleLoginClose}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+
+      <RegisterModal 
+        open={registerOpen}
+        onClose={handleRegisterClose}
+        onSwitchToLogin={handleSwitchToLogin}
+      />
     </>
   );
 };
