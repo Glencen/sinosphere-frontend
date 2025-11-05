@@ -1,11 +1,11 @@
-import { Box } from '@mui/material';
+import { AuthProvider } from '../contexts/AuthContext'
 import Navbar from '../components/Navbar';
 
 function MainPage() {
     return (
-        <Box>
+        <AuthProvider>
             <Navbar/>
-        </Box>
+        </AuthProvider>
     );
 }
 
