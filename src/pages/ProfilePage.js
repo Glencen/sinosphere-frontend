@@ -106,7 +106,7 @@ const ProfilePage = () => {
       )}
 
       <Grid container spacing={3}>
-        <Grid size={4}>
+        <Grid size={3}>
           <Stack spacing={3}>
             <Box>
               <Paper>
@@ -170,11 +170,11 @@ const ProfilePage = () => {
             </Box>
           </Stack>
         </Grid>
-        <Grid size={8}>
+        <Grid size={9}>
           <Box>
             <Box spacing={3}>
               <Grid container spacing={3}>
-                <Grid item size={4}>
+                <Grid item size={3}>
                   <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'primary.main', color: 'white' }}>
                     <Typography variant="h4" fontWeight="bold">
                       {personalDictionary.length}
@@ -184,7 +184,7 @@ const ProfilePage = () => {
                     </Typography>
                   </Paper>
                 </Grid>
-                <Grid item size={4}>
+                <Grid item size={3}>
                   <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'secondary.main', color: 'white' }}>
                     <Typography variant="h4" fontWeight="bold">
                       0
