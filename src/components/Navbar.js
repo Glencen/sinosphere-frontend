@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   AppBar, 
   Toolbar, 
@@ -19,8 +20,6 @@ import {
 import { Menu as MenuIcon } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { ReactComponent as AppIcon } from '../logo.svg';
-import LoginModal from './LoginModal';
-import RegisterModal from './RegisterModal';
 
 const navigationStyles = {
   appBar: {
@@ -123,44 +122,23 @@ const navigationStyles = {
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [registerOpen, setRegisterOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, isAuthenticated, logout } = useAuth();
 
+  const navigate = useNavigate();
+
+  const handleNavigation = (path) => {
+    return () => {
+      navigate(path);
+      if (isMobile) setMobileOpen(false);
+    };
+  };
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-
-  const handleLoginOpen = () => {
-    setLoginOpen(true);
-    if (isMobile) setMobileOpen(false);
-  };
-
-  const handleRegisterOpen = () => {
-    setRegisterOpen(true);
-    if (isMobile) setMobileOpen(false);
-  };
-
-  const handleLoginClose = () => {
-    setLoginOpen(false);
-  };
-
-  const handleRegisterClose = () => {
-    setRegisterOpen(false);
-  };
-
-  const handleSwitchToRegister = () => {
-    setLoginOpen(false);
-    setRegisterOpen(true);
-  };
-
-  const handleSwitchToLogin = () => {
-    setRegisterOpen(false);
-    setLoginOpen(true);
   };
 
   const handleUserMenuOpen = (event) => {
@@ -178,9 +156,10 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: 'Главная', href: '#' },
-    { label: 'Словарь', href: '#' },
-    { label: 'О нас', href: '#' },
+    { label: 'Главная', path: '/' },
+    { label: 'Словарь', path: '/dictionary' },
+    { label: 'Профиль', path: '/profile' },
+    { label: 'О нас', path: '/about' },
   ];
 
   const getInitials = (username) => {
@@ -197,7 +176,7 @@ const Navbar = () => {
       </Box>
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.label} component="a" href={item.href} disablePadding>
+          <ListItem key={item.label} component="a" onClick={handleNavigation(item.path)} disablePadding>
             <ListItemText 
               primary={item.label} 
               sx={{ textAlign: 'center', '& .MuiListItemText-primary': { fontWeight: 500 } }}
@@ -221,10 +200,10 @@ const Navbar = () => {
           </>
         ) : (
           <ListItem sx={navigationStyles.drawerAuthContainer}>
-            <Button variant="outlined" fullWidth onClick={handleLoginOpen}>
+            <Button variant="outlined" fullWidth onClick={handleNavigation('/login')}>
               Войти
             </Button>
-            <Button variant="contained" fullWidth onClick={handleRegisterOpen}>
+            <Button variant="contained" fullWidth onClick={handleNavigation('/register')}>
               Начать учиться
             </Button>
           </ListItem>
@@ -248,7 +227,7 @@ const Navbar = () => {
             <>
               <Box sx={navigationStyles.navContainer}>
                 {navItems.map((item) => (
-                  <Button key={item.label} href={item.href} sx={navigationStyles.navButton}>
+                  <Button key={item.label} onClick={handleNavigation(item.path)} sx={navigationStyles.navButton}>
                     {item.label}
                   </Button>
                 ))}
@@ -266,7 +245,10 @@ const Navbar = () => {
                     open={Boolean(userMenuAnchor)}
                     onClose={handleUserMenuClose}
                   >
-                    <MenuItem onClick={handleUserMenuClose}>
+                    <MenuItem onClick={() => {
+                        handleUserMenuClose();
+                        navigate('/profile');
+                      }}>
                       Профиль: {user?.user?.username}
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>Выйти</MenuItem>
@@ -274,10 +256,18 @@ const Navbar = () => {
                 </Box>
               ) : (
                 <Box sx={navigationStyles.authContainer}>
-                  <Button variant="outlined" sx={navigationStyles.loginButton} onClick={handleLoginOpen}>
+                  <Button 
+                    variant="outlined" 
+                    sx={navigationStyles.loginButton} 
+                    onClick={handleNavigation('/login')}
+                  >
                     Войти
                   </Button>
-                  <Button variant="contained" sx={navigationStyles.signupButton} onClick={handleRegisterOpen}>
+                  <Button 
+                    variant="contained" 
+                    sx={navigationStyles.signupButton} 
+                    onClick={handleNavigation('/register')}
+                  >
                     Начать учиться
                   </Button>
                 </Box>
@@ -309,18 +299,6 @@ const Navbar = () => {
       >
         {drawer}
       </Drawer>
-
-      <LoginModal 
-        open={loginOpen}
-        onClose={handleLoginClose}
-        onSwitchToRegister={handleSwitchToRegister}
-      />
-
-      <RegisterModal 
-        open={registerOpen}
-        onClose={handleRegisterClose}
-        onSwitchToLogin={handleSwitchToLogin}
-      />
     </>
   );
 };
