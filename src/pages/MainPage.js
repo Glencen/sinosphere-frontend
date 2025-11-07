@@ -1,11 +1,15 @@
-import { AuthProvider } from '../contexts/AuthContext'
-import Navbar from '../components/Navbar';
+import { Box, Typography } from '@mui/material';
 
 function MainPage() {
     return (
-        <AuthProvider>
-            <Navbar/>
-        </AuthProvider>
+        <Box sx={{ py: 8, textAlign: 'center' }}>
+            <Typography variant="h2" gutterBottom>
+                Добро пожаловать в Sinosphere
+            </Typography>
+            <Typography variant="h5" color="text.secondary">
+                Изучайте китайский язык с помощью умного словаря
+            </Typography>
+        </Box>
     );
 }
 
