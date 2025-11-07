@@ -98,7 +98,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {error}
