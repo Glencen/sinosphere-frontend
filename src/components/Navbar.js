@@ -35,7 +35,11 @@ const navigationStyles = {
   },
   logoContainer: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.8
+    }
   },
   logoText: {
     color: '#2563EB',
@@ -104,7 +108,11 @@ const navigationStyles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    mb: 2
+    mb: 2,
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.8
+    }
   },
   drawerAuthContainer: {
     flexDirection: 'column',
@@ -135,6 +143,11 @@ const Navbar = () => {
       navigate(path);
       if (isMobile) setMobileOpen(false);
     };
+  };
+
+  const handleLogoClick = () => {
+    navigate('/');
+    if (isMobile) setMobileOpen(false);
   };
 
   const handleDrawerToggle = () => {
@@ -168,7 +181,7 @@ const Navbar = () => {
 
   const drawer = (
     <Box sx={navigationStyles.drawerContent} onClick={handleDrawerToggle}>
-      <Box sx={navigationStyles.drawerLogo}>
+      <Box sx={navigationStyles.drawerLogo} onClick={handleLogoClick}>
         <AppIcon width={50} height={50} />
         <Typography variant="h6" component="div" sx={navigationStyles.logoText}>
           Sinosphere
@@ -216,7 +229,11 @@ const Navbar = () => {
     <>
       <AppBar position="sticky" sx={navigationStyles.appBar}>
         <Toolbar sx={navigationStyles.toolbar}>
-          <Box py={'20px'} sx={navigationStyles.logoContainer}>
+          <Box 
+            py={'20px'} 
+            sx={navigationStyles.logoContainer}
+            onClick={handleLogoClick}
+          >
             <AppIcon width={50} height={50} />
             <Typography pl="12px" variant="h6" component="div" sx={navigationStyles.logoText}>
               Sinosphere
