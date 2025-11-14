@@ -158,6 +158,7 @@ const Navbar = () => {
   const navItems = [
     { label: 'Главная', path: '/' },
     { label: 'Словарь', path: '/dictionary' },
+    { label: 'Задания', path: '/tasks' },
     { label: 'Профиль', path: '/profile' },
     { label: 'О нас', path: '/about' },
   ];
