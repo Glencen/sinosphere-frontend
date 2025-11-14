@@ -13,20 +13,27 @@ import {
   CircularProgress,
   Alert,
   Chip,
-  Container
+  Container,
+  InputBase,
+  IconButton
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { authAPI } from '../api';
 
 function SearchResultsPage() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Получаем поисковый запрос из URL параметров
   const searchParams = new URLSearchParams(location.search);
   const query = searchParams.get('q') || '';
+
+  useEffect(() => {
+    setSearchInput(query);
+  }, [query]);
 
   useEffect(() => {
     if (query) {
@@ -62,18 +69,84 @@ function SearchResultsPage() {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
+
   if (!query) {
     return (
       <Container sx={{ py: 4 }}>
         <Alert severity="info">
           Введите поисковый запрос для начала поиска
         </Alert>
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <Paper
+            component="form"
+            onSubmit={handleSearch}
+            sx={{
+              p: '2px 4px',
+              display: 'flex',
+              alignItems: 'center',
+              width: 400,
+              maxWidth: '90%'
+            }}
+          >
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Введите слово на китайском или пиньине..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              inputProps={{ 'aria-label': 'поиск слов' }}
+            />
+            <IconButton 
+              type="submit" 
+              sx={{ p: '10px' }} 
+              aria-label="search"
+              disabled={!searchInput.trim()}
+            >
+              <SearchIcon />
+            </IconButton>
+          </Paper>
+        </Box>
       </Container>
     );
   }
 
   return (
     <Container sx={{ py: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+        <Paper
+          component="form"
+          onSubmit={handleSearch}
+          sx={{
+            p: '2px 4px',
+            display: 'flex',
+            alignItems: 'center',
+            width: 400,
+            maxWidth: '90%'
+          }}
+        >
+          <InputBase
+            sx={{ ml: 1, flex: 1 }}
+            placeholder="Введите слово на китайском или пиньине..."
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            inputProps={{ 'aria-label': 'поиск слов' }}
+          />
+          <IconButton 
+            type="submit" 
+            sx={{ p: '10px' }} 
+            aria-label="search"
+            disabled={!searchInput.trim()}
+          >
+            <SearchIcon />
+          </IconButton>
+        </Paper>
+      </Box>
+
       <Typography variant="h4" gutterBottom>
         Результаты поиска
       </Typography>
